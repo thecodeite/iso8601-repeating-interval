@@ -1,5 +1,3 @@
-"use strict"
-
 const moment = require('moment')
 
 Object.getPrototypeOf(moment.duration(0)).times = function (factor) {
@@ -14,6 +12,15 @@ Object.getPrototypeOf(moment.duration(0)).times = function (factor) {
 }
 
 function readIso8601String (iso8601String) {
+  const data = {}
+
+  data.repeatCount = 1
+  data.start = data.end = moment(iso8601String)
+
+  return data
+}
+
+function readRepatingIso8601String (iso8601String) {
   const data = {}
   const parts = iso8601String.split('/')
   const repeat = parts[0]
@@ -51,7 +58,7 @@ class Iso8601RepeatingInterval {
 
   firstAfter (date) {
     date = moment(date)
-    if (this._end && date.isAfter(this._end)) return undefined
+    if (this._end && date.isAfter(this._end)) return {}
     if (this._start && date.isSameOrBefore(this._start)) return {index: 0, date: this._start.clone()}
 
     let index = 0
@@ -59,8 +66,6 @@ class Iso8601RepeatingInterval {
 
     do {
       index++
-      //if (index > this._repeat) ;
-
       cursor = this._start.clone().add(this._duration.times(index))
     } while (cursor.isBefore(date))
 
@@ -69,7 +74,10 @@ class Iso8601RepeatingInterval {
 }
 
 module.exports = function (iso8601String) {
-  const data = readIso8601String(iso8601String)
+  const data = iso8601String.startsWith('R')
+    ? readRepatingIso8601String(iso8601String)
+    : readIso8601String(iso8601String)
+
   return new Iso8601RepeatingInterval(data.repeatCount, data.start, data.end, data.duration)
 }
 

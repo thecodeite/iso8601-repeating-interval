@@ -9,22 +9,53 @@ demand.prototype.sameDateAs = function (expected) {
   return this
 }
 
-describe('reading iso 8601 string', () => {
+describe('reading iso 8601 string without recurence', () => {
+  it('should read a simple date', () => {
+    const interval = makeInterval('2017-01-01')
+
+    demand(interval._repeatCount).must.equal(1)
+    demand(interval._start).must.be.sameDateAs('2017-01-01')
+    demand(interval._end).must.be.sameDateAs('2017-01-01')
+    demand(interval._duration).must.be.undefined()
+  })
+
+  describe('firstAfter', () => {
+    it('should return start date for pre start', () => {
+      const interval = makeInterval('2017-01-01')
+      const date = moment('2016-01-01')
+
+      const result = interval.firstAfter(date)
+      demand(result.date).must.be.sameDateAs('2017-01-01')
+      demand(result.index).must.equal(0)
+    })
+
+    it('should return undefined for after', () => {
+      const interval = makeInterval('2017-01-01')
+      const date = moment('2018-01-01')
+
+      const result = interval.firstAfter(date)
+      demand(result.date).must.be.undefined()
+      demand(result.index).must.be.undefined()
+    })
+  })
+})
+
+describe('reading iso 8601 string with recurence', () => {
   it('should read a simple forward repeating interval', () => {
-    const interval = makeInterval('R/2011-01-01/P3M')
+    const interval = makeInterval('R/2017-01-01/P3M')
 
     demand(interval._repeatCount).must.equal(Infinity)
-    demand(interval._start).must.be.sameDateAs('2011-01-01')
+    demand(interval._start).must.be.sameDateAs('2017-01-01')
     demand(interval._end).must.be.undefined()
     demand(interval._duration.months()).must.equal(3)
   })
 
   it('should read a simple backwards repeating interval', () => {
-    const interval = makeInterval('R/P3M/2011-01-01')
+    const interval = makeInterval('R/P3M/2017-01-01')
 
     demand(interval._repeatCount).must.equal(Infinity)
     demand(interval._start).must.be.undefined()
-    demand(interval._end).must.be.sameDateAs('2011-01-01')
+    demand(interval._end).must.be.sameDateAs('2017-01-01')
     demand(interval._duration.months()).must.equal(3)
   })
 

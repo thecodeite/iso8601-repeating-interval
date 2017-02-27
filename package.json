@@ -1,6 +1,6 @@
 {
   "name": "iso8601-repeating-interval",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A package for calculating repetitions and intervals based on the iso 8601 pattern",
   "main": "index.js",
   "scripts": {
