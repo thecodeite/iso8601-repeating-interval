@@ -58,7 +58,7 @@ class Iso8601RepeatingInterval {
 
   firstAfter (date) {
     date = moment(date)
-    if (this._end && date.isAfter(this._end)) return {}
+    if (this._end && date.isAfter(this._end)) return null
     if (this._start && date.isSameOrBefore(this._start)) return {index: 0, date: this._start.clone()}
 
     let index = 0
